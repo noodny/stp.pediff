@@ -22,13 +22,13 @@ var cli = meow({
         '  pediff [options] run <spec>[ <spec2> <spec...> ]',
         '',
         'Options',
-        //'  --live          - runs a webserver for dynamic testing',
+        '  --live          - runs a webserver for dynamic testing',
         '  --config <path> - tells pediff where to look for a configuration file (by default it\'s pediff.js in root directory)',
         '  --debug         - outputs additional information'
     ]
 });
 
-if(!cli.input.length && !cli.flags.live || cli.input[0] !== 'run' || !cli.input[1]) {
+if(!cli.flags.live && (!cli.input.length || cli.input[0] !== 'run' || !cli.input[1])) {
     cli.showHelp();
     process.exit(0);
 }
@@ -54,13 +54,13 @@ config.debug = !!cli.flags.debug;
 
 instance = new Pediff(config);
 
-//if(cli.flags.live) {
-//    new Server(config, instance);
-//} else {
+if(cli.flags.live) {
+    new Server(config, instance);
+} else {
     if(cli.input[1] === 'all') {
         instance.runAll();
     } else {
         var specs = cli.input.splice(1, cli.input.length - 1);
         instance.runBundle(specs);
     }
-//}
+}
